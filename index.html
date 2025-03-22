@@ -12,17 +12,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 5em;
             background-color: #000000;
             overflow: hidden;
-            font-family: Arial, sans-serif;
         }
 
         #randomNumber {
-            margin: 10px;
+            margin: 0;
             color: white;
+            font-size: 20vw; 
             opacity: 1;
             transform: scale(1);
+            text-align: center;
         }
 
         #recentNumbersWindow {
@@ -117,10 +117,6 @@
             recentNumbersWindow.classList.add('show');
         }
 
-        window.addEventListener('beforeunload', () => {
-            randomNumberElement.innerText = '';
-        });
-
         recentNumbers.unshift(randomNumber);
         if (recentNumbers.length > 10) recentNumbers.pop();
         localStorage.setItem('recentNumbers', JSON.stringify(recentNumbers));
@@ -130,6 +126,7 @@
 
         setInterval(() => {
             updateRandomNumber();
+            updateRecentNumbers();
         }, 1);
     </script>
 </body>
