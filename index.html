@@ -77,6 +77,25 @@
         #toggleRecentNumbers:hover {
             background: none;
         }
+
+        #toggleFontButton {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        #toggleFontButton:hover {
+            background: none;
+        }
     </style>
 </head>
 <body>
@@ -87,16 +106,21 @@
     </div>
 
     <button id="toggleRecentNumbers">&#128065;</button>
+    <button id="toggleFontButton">Toggle Font</button>
 
     <script>
         const randomNumberElement = document.getElementById('randomNumber');
         const recentNumbersWindow = document.getElementById('recentNumbersWindow');
         const recentNumbersList = document.getElementById('recentNumbersList');
         const toggleRecentNumbersButton = document.getElementById('toggleRecentNumbers');
+        const toggleFontButton = document.getElementById('toggleFontButton');
 
         let recentNumbers = JSON.parse(localStorage.getItem('recentNumbers')) || [];
         let randomNumber = Math.floor(Math.random() * 1000000);
         localStorage.setItem('randomNumber', randomNumber);
+
+        let currentFont = localStorage.getItem('fontStyle') || 'default';
+        document.body.style.fontFamily = currentFont === 'smooth' ? 'sans-serif' : 'inherit';
 
         function updateRandomNumber() {
             randomNumberElement.innerText = randomNumber;
@@ -111,6 +135,12 @@
         toggleRecentNumbersButton.addEventListener('click', () => {
             recentNumbersWindow.classList.toggle('show');
             localStorage.setItem('recentNumbersVisible', recentNumbersWindow.classList.contains('show'));
+        });
+
+        toggleFontButton.addEventListener('click', () => {
+            currentFont = currentFont === 'smooth' ? 'default' : 'smooth';
+            document.body.style.fontFamily = currentFont === 'smooth' ? 'sans-serif' : 'inherit';
+            localStorage.setItem('fontStyle', currentFont);
         });
 
         if (localStorage.getItem('recentNumbersVisible') === 'true') {
