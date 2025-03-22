@@ -14,12 +14,13 @@
             align-items: center;
             background-color: #000000;
             overflow: hidden;
+            position: relative;
         }
 
         #randomNumber {
             margin: 0;
             color: white;
-            font-size: 20vw; 
+            font-size: 20vw;
             opacity: 1;
             transform: scale(1);
             text-align: center;
@@ -96,6 +97,45 @@
         #toggleFontButton:hover {
             background: none;
         }
+
+        #announcement {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 3em;
+            text-align: center;
+            z-index: 10000;
+            animation: fadeOut 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        #secretAnnouncement {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            backdrop-filter: blur(10px);
+            font-size: 1.2em;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -108,13 +148,24 @@
     <button id="toggleRecentNumbers">&#128065;</button>
     <button id="toggleFontButton">Toggle Font</button>
 
+    <div id="announcement"></div>
+    
+    <div id="secretAnnouncement">
+        <input type="text" id="announcementText" placeholder="Enter announcement text" />
+        <button id="sendAnnouncement">Send</button>
+    </div>
+
     <script>
         const randomNumberElement = document.getElementById('randomNumber');
         const recentNumbersWindow = document.getElementById('recentNumbersWindow');
         const recentNumbersList = document.getElementById('recentNumbersList');
         const toggleRecentNumbersButton = document.getElementById('toggleRecentNumbers');
         const toggleFontButton = document.getElementById('toggleFontButton');
-
+        const announcementElement = document.getElementById('announcement');
+        const secretAnnouncementElement = document.getElementById('secretAnnouncement');
+        const announcementText = document.getElementById('announcementText');
+        const sendAnnouncementButton = document.getElementById('sendAnnouncement');
+        
         let recentNumbers = JSON.parse(localStorage.getItem('recentNumbers')) || [];
         let randomNumber = Math.floor(Math.random() * 1000000);
         localStorage.setItem('randomNumber', randomNumber);
@@ -132,6 +183,14 @@
                 .join('');
         }
 
+        function showAnnouncement(message) {
+            announcementElement.innerText = message;
+            announcementElement.style.display = 'flex';
+            setTimeout(() => {
+                announcementElement.style.display = 'none';
+            }, 2000);
+        }
+
         toggleRecentNumbersButton.addEventListener('click', () => {
             recentNumbersWindow.classList.toggle('show');
             localStorage.setItem('recentNumbersVisible', recentNumbersWindow.classList.contains('show'));
@@ -141,6 +200,26 @@
             currentFont = currentFont === 'smooth' ? 'default' : 'smooth';
             document.body.style.fontFamily = currentFont === 'smooth' ? 'sans-serif' : 'inherit';
             localStorage.setItem('fontStyle', currentFont);
+        });
+
+        let secretKey = "fjgh"; 
+        let enteredKeys = "";
+
+        document.addEventListener('keydown', (event) => {
+            enteredKeys += event.key;
+            if (enteredKeys === secretKey) {
+                secretAnnouncementElement.style.display = 'block';
+                enteredKeys = ""; 
+            }
+        });
+
+        sendAnnouncementButton.addEventListener('click', () => {
+            const announcementMessage = announcementText.value;
+            if (announcementMessage) {
+                showAnnouncement(announcementMessage);
+                announcementText.value = ""; 
+                secretAnnouncementElement.style.display = 'none';
+            }
         });
 
         if (localStorage.getItem('recentNumbersVisible') === 'true') {
@@ -157,7 +236,11 @@
         setInterval(() => {
             updateRandomNumber();
             updateRecentNumbers();
-        }, 1);
+
+            if (randomNumber.toString().length === 3) {
+                showAnnouncement('SOMEONE GOT 3 DIGITS, WOOOO');
+            }
+        }, 1000);
     </script>
 </body>
 </html>
