@@ -238,7 +238,15 @@
             updateRecentNumbers();
 
             if (randomNumber.toString().length === 3) {
-                showAnnouncement('SOMEONE GOT 3 DIGITS, WOOOO');
+                showAnnouncement('YOU GOT 3 DIGITS, WOOOO');
+            }
+
+            if (randomNumber.toString().length === 2) {
+                showAnnouncement('YOU GOT 2 DIGITS, WOOOO');
+            }
+            
+            if (randomNumber.toString().length === 1) {
+                showAnnouncement('YOU GOT 1 DIGIT, WHAAA?!?!??!');
             }
         }, 1000);
     </script>
