@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>best rng ever</title>
     <style>
         body, html {
@@ -15,20 +15,122 @@
             font-size: 5em;
             background-color: #000000;
             overflow: hidden;
+            font-family: Arial, sans-serif;
         }
 
         #randomNumber {
             margin: 10px;
             color: white;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #recentNumbersWindow {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            backdrop-filter: blur(10px);
+            display: none;
+            max-height: 150px;
+            width: 160px;
+            overflow-y: scroll;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        #recentNumbersWindow.show {
+            display: block;
+        }
+
+        #recentNumbersList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #recentNumbersList li {
+            margin-bottom: 3px;
+            font-size: 30px;
+            color: #555;
+        }
+
+        #toggleRecentNumbers {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        #toggleRecentNumbers:hover {
+            background: none;
         }
     </style>
 </head>
 <body>
     <div id="randomNumber"></div>
 
+    <div id="recentNumbersWindow">
+        <ul id="recentNumbersList"></ul>
+    </div>
+
+    <button id="toggleRecentNumbers">&#128065;</button>
+
     <script>
-        document.getElementById('randomNumber').innerText = Math.floor(Math.random() * 1000000)
+        const randomNumberElement = document.getElementById('randomNumber');
+        const recentNumbersWindow = document.getElementById('recentNumbersWindow');
+        const recentNumbersList = document.getElementById('recentNumbersList');
+        const toggleRecentNumbersButton = document.getElementById('toggleRecentNumbers');
+
+        let recentNumbers = JSON.parse(localStorage.getItem('recentNumbers')) || [];
+        let randomNumber = Math.floor(Math.random() * 1000000);
+        localStorage.setItem('randomNumber', randomNumber);
+
+        function updateRandomNumber() {
+            randomNumberElement.innerText = randomNumber;
+        }
+
+        function updateRecentNumbers() {
+            recentNumbersList.innerHTML = recentNumbers
+                .map((num, index) => `<li>${index + 1}. ${num}</li>`)
+                .join('');
+        }
+
+        toggleRecentNumbersButton.addEventListener('click', () => {
+            recentNumbersWindow.classList.toggle('show');
+            localStorage.setItem('recentNumbersVisible', recentNumbersWindow.classList.contains('show'));
+        });
+
+        if (localStorage.getItem('recentNumbersVisible') === 'true') {
+            recentNumbersWindow.classList.add('show');
+        }
+
+        window.addEventListener('beforeunload', () => {
+            randomNumberElement.innerText = '';
+        });
+
+        recentNumbers.unshift(randomNumber);
+        if (recentNumbers.length > 10) recentNumbers.pop();
+        localStorage.setItem('recentNumbers', JSON.stringify(recentNumbers));
+
+        updateRandomNumber();
+        updateRecentNumbers();
+
+        setInterval(() => {
+            updateRandomNumber();
+        }, 1);
     </script>
 </body>
-
 </html>
